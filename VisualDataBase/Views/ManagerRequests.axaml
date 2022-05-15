@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+        x:Class="VisualDataBase.Views.ManagerRequests"
+        Title="ManagerRequests"
+        Width="600" Height="400">
+
+  <Grid RowDefinitions="auto, auto, auto, *">
+
+    <DockPanel Grid.Row="0">
+      <Menu>
+        <MenuItem Header="About">
+        </MenuItem>
+      </Menu>
+    </DockPanel>
+
+    <TabControl Items="{Binding TableTabItems}">
+
+      <TabControl.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding Title}"/>
+        </DataTemplate>
+      </TabControl.ItemTemplate>
+
+      <TabControl.ContentTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding Content}"/>
+        </DataTemplate>
+      </TabControl.ContentTemplate>
+
+    </TabControl>
+
+  </Grid>
+  
+</Window>
