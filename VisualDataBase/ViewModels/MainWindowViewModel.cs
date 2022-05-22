@@ -1,68 +1,77 @@
 using ReactiveUI;
+using System.Reactive;
 using System.Collections.ObjectModel;
+
 
 namespace VisualDataBase.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public ObservableCollection<TableTabItem> TableTabItems;
-
-
-        private ObservableCollection<Condition> selectConditions;
-        public ObservableCollection<Condition> SelectConditions
-        {
-            get { return selectConditions; }
-            set { this.RaiseAndSetIfChanged(ref selectConditions, value); }
+        public ObservableCollection<TableTabItemViewModel> _tableTabItems;
+        public ObservableCollection<TableTabItemViewModel> TableTabItems 
+        { 
+            get
+            {
+                return _tableTabItems;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _tableTabItems, value);
+            }
         }
 
-        private ObservableCollection<Condition> joinConditions;
-        public ObservableCollection<Condition> JoinConditions
+        private TableTabItemViewModel _currentTableTabItem;
+        public TableTabItemViewModel CurrentTableTabItem
         {
-            get { return joinConditions; }
-            set { this.RaiseAndSetIfChanged(ref joinConditions, value); }
+            get
+            {
+                return _currentTableTabItem;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _currentTableTabItem, value);
+            }
         }
 
-        private ObservableCollection<Condition> groupByConditions;
-        public ObservableCollection<Condition> GroupByConditions
-        {
-            get { return groupByConditions; }
-            set { this.RaiseAndSetIfChanged(ref groupByConditions, value); }
-        }
 
         public MainWindowViewModel()
         {
-            SelectConditions = new ObservableCollection<Condition> { new Condition("123", "123", "123", 123), new Condition("123", "123", "123", 123) };
-            JoinConditions = new ObservableCollection<Condition> { new Condition("123", "123", "123", 123), new Condition("123", "123", "123", 123) };
-            GroupByConditions = new ObservableCollection<Condition> { new Condition("123", "123", "123", 123), new Condition("123", "123", "123", 123) };
+            TableTabItems = new ObservableCollection<TableTabItemViewModel>(AddMainTabs());
 
+            CurrentTableTabItem = TableTabItems[0]; // TEMPORARILY
         }
-    }
 
-    public class Condition
-    {
-        public string Oper { get; set; }
-        public string Field { get; set; }
-        public string Cond { get; set; }
-        public int ValueCondition { get; set; }
 
-        public Condition(string oper, string field, string cond, int value)
+        private ObservableCollection<TableTabItemViewModel> AddMainTabs()
         {
-            Oper = oper;
-            Field = field;
-            Cond = cond;
-            ValueCondition = value;
+            return new ObservableCollection<TableTabItemViewModel>()
+            {
+                new TableTabItemViewModel(TableTypes.Players),
+                new TableTabItemViewModel(TableTypes.Seasons),
+                new TableTabItemViewModel(TableTypes.PlayersSeasons),
+                new TableTabItemViewModel(TableTypes.Nations)
+            };
         }
-    }
 
-    public class TableTabItem
-    {
-        public string Title { get; set; }
-        public string Content { get; set; }
-
-        public TableTabItem(string title, string content)
+        private int indexPage = 1; // TEMPORARILY
+        private void AddTabItemViewModel(string newTabtitle)
         {
-            Title = title;
-            Content = content;
+            newTabtitle = "Page" + indexPage.ToString(); // TEMPORARILY
+            var newTab = new TableTabItemViewModel(newTabtitle);
+            TableTabItems.Add(newTab);
+
+            CurrentTableTabItem = newTab;
+            
+            
+            indexPage++; // TEMPORARILY
         }
+        private void CloseTabITem(TableTabItemViewModel tab)
+        {
+            TableTabItems.Remove(tab);
+
+            CurrentTableTabItem = TableTabItems[0]; // TEMPORARILY
+
+        }
+
     }
 }

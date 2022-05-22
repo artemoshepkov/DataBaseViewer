@@ -1,19 +1,23 @@
 using Avalonia.Controls;
-using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
+using VisualDataBase.ViewModels;
 
 namespace VisualDataBase.Views
 {
     public partial class MainWindow : Window
     {
+        private Button _closeTab;
+
         public MainWindow()
         {
             InitializeComponent();
-
         }
-        private void openNewWindow(object sender, RoutedEventArgs e)
+
+        private void InitializeComponent()
         {
-            ManagerRequests newWin = new ManagerRequests();
-            newWin.Show();
+            AvaloniaXamlLoader.Load(this);
+
+            _closeTab = this.FindControl<Button>("closeTabBtn");
         }
     }
 }

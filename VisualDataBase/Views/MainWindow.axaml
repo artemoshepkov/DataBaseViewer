@@ -3,182 +3,80 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+        xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+        xmlns:ui="clr-namespace:VisualDataBase.Views;assembly=VisualDataBase"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
         x:Class="VisualDataBase.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="VisualDataBase" 
-        Width="600" Height="400">
+        Width="900" Height="600">
 
-  <Grid RowDefinitions="auto, *, auto">
+  <Grid RowDefinitions="auto, *">
 
-    <DockPanel Grid.Row="0" Background="#f7f0eb">
-
-      <Button>
-        <Image Source="/Assets/icon_go.png" Width="20" Stretch="Fill"></Image>
-      </Button>
-
-      <Button >
-        <Image Source="/Assets/icon_save.png" Width="20" Stretch="Fill"></Image>
-      </Button>
-
-      <Button>
-        <Image Source="/Assets/icon_deleteBucket.png" Width="20" Stretch="Fill"></Image>
-
-      </Button>
-      
+    <DockPanel Grid.Row="0">
+      <Menu>
+        <MenuItem Header="About">
+        </MenuItem>
+      </Menu>
     </DockPanel>
 
-    <Grid RowDefinitions="*, *, *" ColumnDefinitions="auto, auto, *" Grid.Row="1">
 
-      <ComboBox SelectedIndex="0" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0">
-        <ComboBoxItem>
-          <TextBlock Text="Table"/>
-        </ComboBoxItem>
-      </ComboBox>
+    <TabControl Items="{Binding TableTabItems}" SelectedItem="{Binding CurrentTableTabItem}" Grid.Row="1">
+      <TabControl.Template>
+        <ControlTemplate>
+          <Border
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="{TemplateBinding CornerRadius}"
+            Background="{TemplateBinding Background}"
+            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+            VerticalAlignment="{TemplateBinding VerticalAlignment}">
+            <StackPanel>
+              <StackPanel Orientation="Horizontal">
+                <ItemsPresenter
+                    Name="PART_ItemsPresenter"
+                    Items="{TemplateBinding Items}"
+                    ItemsPanel="{TemplateBinding ItemsPanel}"
+                    ItemTemplate="{TemplateBinding ItemTemplate}">
+                </ItemsPresenter>
 
-      <ComboBox SelectedIndex="0"  HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1">
-        <ComboBoxItem>
-          <TextBlock Text="Fields"/>
-        </ComboBoxItem>
-      </ComboBox>
+                <Button Content="+" Command="{Binding $parent[Window].DataContext.AddTabItemViewModel}"/>
+              </StackPanel>
 
-      <DataGrid Name="SelectConditions" Items="{Binding SelectConditions}" CanUserReorderColumns="False" Grid.Row="0" Grid.Column="2">
-        <DataGrid.Columns>
-
-          <DataGridTemplateColumn Header="Operator" Width="auto">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <ComboBox Items="{Binding Operators}"  HorizontalAlignment="Stretch" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Field" Width="*">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <ComboBox Items="{Binding TableFields}"  HorizontalAlignment="Stretch" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Condition" Width="auto">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <ComboBox Items="{Binding Conditions}"  HorizontalAlignment="Stretch" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Value" Width="auto">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <TextBox Text="{Binding ValueCondition}"/>
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-        </DataGrid.Columns>
-      </DataGrid>  
+              <ContentPresenter
+                  Name="PART_SelectedContentHost"
+                  Margin="{TemplateBinding Padding}"
+                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                  Content="{TemplateBinding SelectedContent}"
+                  ContentTemplate="{TemplateBinding SelectedContentTemplate}">
+              </ContentPresenter>
+            </StackPanel>
+          </Border>
+        </ControlTemplate>
+      </TabControl.Template>
       
+      <TabControl.ItemTemplate>
+        <DataTemplate>
+          <DockPanel >
+            <TextBlock Text="{Binding Title}"/>
+            <Button Name="closeTabBtn" Content="x" Command="{Binding $parent[Window].DataContext.CloseTabITem}" CommandParameter="{Binding $self.DataContext}" />
+          </DockPanel>
+        </DataTemplate>
+      </TabControl.ItemTemplate>
       
-      <ComboBox SelectedIndex="0"  HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="0">
-        <ComboBoxItem>
-          <TextBlock Text="Table"/>
-        </ComboBoxItem>
-      </ComboBox>
-
-      <DataGrid Name="JoinConditions" Items="{Binding JoinConditions}" CanUserReorderColumns="False" Grid.Row="1" Grid.Column="2">
-        <DataGrid.Columns>
-
-          <DataGridTemplateColumn Header="Operator" Width="auto">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <ComboBox Items="{Binding Operators}"  HorizontalAlignment="Stretch" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Field" Width="*">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <ComboBox Items="{Binding TableFields}"  HorizontalAlignment="Stretch" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Condition" Width="auto">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <ComboBox Items="{Binding Conditions}"  HorizontalAlignment="Stretch" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Value" Width="auto">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <TextBox Text="{Binding ValueCondition}"/>
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-        </DataGrid.Columns>
-      </DataGrid>
+      <TabControl.ContentTemplate>
+        <DataTemplate> 
+          <ui:TableTabItem/>
+        </DataTemplate>
+      </TabControl.ContentTemplate>
+    </TabControl>
 
 
-      <ComboBox SelectedIndex="0" Grid.Row="2" Grid.Column="0">
-        <ComboBoxItem>
-          <TextBlock Text="Group by"/>
-        </ComboBoxItem>
-      </ComboBox>
 
-      <DataGrid Name="GroupByConditions" Items="{Binding GroupByConditions}" CanUserReorderColumns="False" Grid.Row="2" Grid.Column="2">
-        <DataGrid.Columns>
 
-          <DataGridTemplateColumn Header="Operator" Width="auto">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <ComboBox Items="{Binding Operators}"  HorizontalAlignment="Stretch" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Field" Width="*">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <ComboBox Items="{Binding TableFields}"  HorizontalAlignment="Stretch" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Condition" Width="auto">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <ComboBox Items="{Binding Conditions}"  HorizontalAlignment="Stretch" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-          <DataGridTemplateColumn Header="Value" Width="auto">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <TextBox Text="{Binding ValueCondition}"/>
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-
-        </DataGrid.Columns>
-      </DataGrid>
-
-    </Grid>
-
-    <ComboBox SelectedIndex="0" HorizontalAlignment="Stretch" Grid.Row="2">
-      <ComboBoxItem>
-        <TextBlock Text="History"/>
-      </ComboBoxItem>
-    </ComboBox>
-    
   </Grid>
+
+  
 
 </Window>
