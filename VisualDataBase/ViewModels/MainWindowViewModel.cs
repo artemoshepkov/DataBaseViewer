@@ -7,71 +7,35 @@ namespace VisualDataBase.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public ObservableCollection<TableTabItemViewModel> _tableTabItems;
-        public ObservableCollection<TableTabItemViewModel> TableTabItems 
-        { 
-            get
-            {
-                return _tableTabItems;
-            }
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _tableTabItems, value);
-            }
-        }
+        private ViewModelBase _contentView;
 
-        private TableTabItemViewModel _currentTableTabItem;
-        public TableTabItemViewModel CurrentTableTabItem
+        private DataBaseVisualViewModel dataBaseVisualView;
+
+        private ManagerSQLRequestsViewModel managerRequestsView;
+
+        ViewModelBase ContentView
         {
-            get
-            {
-                return _currentTableTabItem;
-            }
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _currentTableTabItem, value);
-            }
+            get { return _contentView; }
+            set { this.RaiseAndSetIfChanged(ref _contentView, value); }
         }
 
 
         public MainWindowViewModel()
         {
-            TableTabItems = new ObservableCollection<TableTabItemViewModel>(AddMainTabs());
-
-            CurrentTableTabItem = TableTabItems[0]; // TEMPORARILY
+            dataBaseVisualView = new DataBaseVisualViewModel();
+            managerRequestsView = new ManagerSQLRequestsViewModel();
+            ContentView = dataBaseVisualView;
         }
 
 
-        private ObservableCollection<TableTabItemViewModel> AddMainTabs()
+        public void ChangeToDataBaseVisual()
         {
-            return new ObservableCollection<TableTabItemViewModel>()
-            {
-                new TableTabItemViewModel(TableTypes.Players),
-                new TableTabItemViewModel(TableTypes.Seasons),
-                new TableTabItemViewModel(TableTypes.PlayersSeasons),
-                new TableTabItemViewModel(TableTypes.Nations)
-            };
+            ContentView = dataBaseVisualView;
         }
 
-        private int indexPage = 1; // TEMPORARILY
-        private void AddTabItemViewModel(string newTabtitle)
+        public void ChangeToManagerRequests()
         {
-            newTabtitle = "Page" + indexPage.ToString(); // TEMPORARILY
-            var newTab = new TableTabItemViewModel(newTabtitle);
-            TableTabItems.Add(newTab);
-
-            CurrentTableTabItem = newTab;
-            
-            
-            indexPage++; // TEMPORARILY
+            ContentView = managerRequestsView;
         }
-        private void CloseTabITem(TableTabItemViewModel tab)
-        {
-            TableTabItems.Remove(tab);
-
-            CurrentTableTabItem = TableTabItems[0]; // TEMPORARILY
-
-        }
-
     }
 }

@@ -4,14 +4,11 @@ using Avalonia.Markup.Xaml;
 
 namespace VisualDataBase.Views
 {
-    public partial class ManagerRequests : Window
+    public partial class ManagerSQLRequestsView : UserControl
     {
-        public ManagerRequests()
+        public ManagerSQLRequestsView()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void InitializeComponent()

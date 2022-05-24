@@ -6,8 +6,6 @@ namespace VisualDataBase.Views
 {
     public partial class MainWindow : Window
     {
-        private Button _closeTab;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -16,8 +14,6 @@ namespace VisualDataBase.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-
-            _closeTab = this.FindControl<Button>("closeTabBtn");
         }
     }
 }

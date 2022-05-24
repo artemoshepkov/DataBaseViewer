@@ -6,15 +6,15 @@
              x:Class="VisualDataBase.Views.TableTabItem">
 
   <Grid Grid.RowDefinitions="auto, *">
+    
     <DockPanel Grid.Row="0">
-      <Button Content="S" Command="{Binding }"/>
-      <Button Content="+" Command="{Binding AddRecordCommand}"/>
-      <Button Content="-"/>
+      <Button Content="S" IsVisible="{Binding IsStaticTable}" Command="{Binding SaveRecordsToDBCommand}"/>
+      <Button Content="+" IsVisible="{Binding IsStaticTable}" Command="{Binding AddRecordCommand}"/>
+      <Button Content="-" IsVisible="{Binding IsStaticTable}" Command="{Binding RemoveRecordCommand}" />
     </DockPanel>
 
-    <DataGrid Name="DataGridBases" Items="{Binding Content}" AutoGenerateColumns="True" Grid.Row="1">
-    </DataGrid> 
-    
+      <DataGrid MaxHeight="475" Name="DataGridBases" Items="{Binding Content}" SelectedItem="{Binding CurrenItemDataGrid}" AutoGeneratingColumn="DeleteExcessColumns" AutoGenerateColumns="True" Grid.Row="1"/>       
+
   </Grid>
   
 </UserControl>

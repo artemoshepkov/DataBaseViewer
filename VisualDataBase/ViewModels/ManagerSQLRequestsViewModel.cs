@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace VisualDataBase.ViewModels
 {
-    public class ManagerRequestsViewModel : ViewModelBase
+    public class ManagerSQLRequestsViewModel : ViewModelBase
     {
         private ObservableCollection<Condition> selectConditions;
         public ObservableCollection<Condition> SelectConditions
@@ -26,7 +26,7 @@ namespace VisualDataBase.ViewModels
             set { this.RaiseAndSetIfChanged(ref groupByConditions, value); }
         }
 
-        ManagerRequestsViewModel()
+        public ManagerSQLRequestsViewModel()
         {
             SelectConditions = new ObservableCollection<Condition> { new Condition("123", "123", "123", 123), new Condition("123", "123", "123", 123) };
             JoinConditions = new ObservableCollection<Condition> { new Condition("123", "123", "123", 123), new Condition("123", "123", "123", 123) };
