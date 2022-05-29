@@ -8,17 +8,23 @@ using VisualDataBase.Models;
 
 namespace VisualDataBase.ViewModels
 {
-    public class Request
+    public class Request : ICloneable
     {
         public string Title { get; set; }
 
         public TableTypes? TypeSelectTable { get; set; }
-        public ObservableCollection<TableField>? SelectFields { get; set; }
-        public ObservableCollection<Condition>? SelectConditions { get; set; }
+        public List<string>? SelectFields { get; set; }
+        public List<Condition>? SelectConditions { get; set; }
 
         public Request()
         {
 
+        }
+
+        public object Clone()
+        {
+            return new Request { Title = this.Title, TypeSelectTable = this.TypeSelectTable, 
+                SelectFields = this.SelectFields, SelectConditions = this.SelectConditions };
         }
     }
 }

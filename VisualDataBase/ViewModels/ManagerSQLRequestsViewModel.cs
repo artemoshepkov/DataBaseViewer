@@ -1,7 +1,9 @@
-﻿using ReactiveUI;
+﻿using Avalonia.Interactivity;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive;
 using System.Reflection;
@@ -13,10 +15,9 @@ namespace VisualDataBase.ViewModels
     {
         private ObservableCollection<Request> _requests;
         private Request _currentRequest;
-        private string _titleCurrentRequest;
 
-        private TableTypes? _typeCurrentSelectTable;
-        private ObservableCollection<TableField>? _fieldsSelectRequest;
+        private ObservableCollection<TableField> _availableSelectFields;
+
         public ObservableCollection<Condition>? _currentSelectConditions;
         public Condition? _currentSelectCondition;
 
@@ -24,68 +25,31 @@ namespace VisualDataBase.ViewModels
         private ObservableCollection<TableField>? _fieldsJoinRequest;
         public ObservableCollection<Condition>? _joinConditions;
 
-        public static List<string> OperatorCommands { get; } = new List<string> { "<", ">", "=", "<=", ">=" };
-
-
         public ObservableCollection<Request> Requests
         {
-            get { return _requests; }
-            set { this.RaiseAndSetIfChanged(ref _requests, value); }
+            get => _requests;
+            set => this.RaiseAndSetIfChanged(ref _requests, value); 
         }
         public Request CurrentRequest
         {
-            get 
+            get
             {
                 return _currentRequest;
             }
             set
             {
                 this.RaiseAndSetIfChanged(ref _currentRequest, value);
-
-                TypeCurrentSelectTable = _currentRequest.TypeSelectTable;
-                TitleCurrentRequest = _currentRequest.Title;
-
-                if (_currentRequest.SelectFields != null)
-                    FieldsSelectRequest = new ObservableCollection<TableField>(_currentRequest.SelectFields);
-                else
-                    FieldsSelectRequest = null;
-
-                if (_currentRequest.SelectConditions != null)
-                    CurrentSelectConditions = new ObservableCollection<Condition>(_currentRequest.SelectConditions);
-                else
-                    CurrentSelectConditions = null;
-            }
-        }
-        public string TitleCurrentRequest
-        {
-            get { return _titleCurrentRequest; }
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _titleCurrentRequest, value);
             }
         }
 
+        public static List<TableTypes> AvailableTables { get; } = new List<TableTypes> { TableTypes.Seasons, TableTypes.Nations, TableTypes.Players, TableTypes.PlayersSeasons };
+        public ObservableCollection<TableField> AvailableSelectFields 
+        { 
+            get => _availableSelectFields;
+            set => this.RaiseAndSetIfChanged(ref _availableSelectFields,  value);
+        }
 
-        public static List<TableTypes> AvailableSelectTables { get; } = new List<TableTypes> { TableTypes.Seasons, TableTypes.Nations, TableTypes.Players, TableTypes.PlayersSeasons };
-        public TableTypes? TypeCurrentSelectTable
-        {
-            get 
-            { 
-                return _typeCurrentSelectTable;
-            }
-            set 
-            { 
-                this.RaiseAndSetIfChanged(ref _typeCurrentSelectTable, value);
-                FieldsSelectRequest = UpdateFields(_typeCurrentSelectTable);
-                if (CurrentSelectConditions != null)
-                    CurrentSelectConditions = new ObservableCollection<Condition>();
-            }
-        }
-        public ObservableCollection<TableField>? FieldsSelectRequest
-        {
-            get { return _fieldsSelectRequest; }
-            set { this.RaiseAndSetIfChanged(ref _fieldsSelectRequest, value); }
-        }
+
         public ObservableCollection<Condition>? CurrentSelectConditions
         {
             get { return _currentSelectConditions; }
@@ -112,7 +76,7 @@ namespace VisualDataBase.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged(ref _typeCurrentJoinTable, value);
-                FieldsJoinRequest = UpdateFields(_typeCurrentJoinTable);
+                //FieldsJoinRequest = UpdateFields(_typeCurrentJoinTable);
 
                 //if (CurrentSelectConditions != null)
                 //    CurrentSelectConditions = new ObservableCollection<Condition>();
@@ -137,9 +101,8 @@ namespace VisualDataBase.ViewModels
         public ManagerSQLRequestsViewModel()
         {
             Requests = new ObservableCollection<Request> { new Request { Title = "Req0" } };
-            CurrentRequest = Requests.First();
-
-            TitleCurrentRequest = CurrentRequest.Title;
+            CurrentRequest = (Request)Requests.First().Clone();
+            CurrentRequest.SelectFields = new List<string>();
 
             ExecuteRequestCommand = ReactiveCommand.Create<List<object>?>(ExecuteRequest);
             AddConditionCommand = ReactiveCommand.Create<int>(AddCondition);
@@ -153,7 +116,7 @@ namespace VisualDataBase.ViewModels
 
             IQueryable<object>? result = null;
 
-            switch (TypeCurrentSelectTable)
+            switch (CurrentRequest.TypeSelectTable)
             {
                 case TableTypes.Seasons:
                     result = from d in MyDataBaseContext.db.Seasons select d;
@@ -217,10 +180,10 @@ namespace VisualDataBase.ViewModels
             if (!VerifyTitleCurrentRequest())
                 return -1;
 
-            if (TypeCurrentSelectTable is null)
+            if (CurrentRequest.TypeSelectTable is null)
                 return -1;
 
-            if (FieldsSelectRequest is null)
+            if (CurrentRequest.SelectFields is null)
                 return -1;
 
             if (CurrentSelectConditions is not null)
@@ -237,12 +200,12 @@ namespace VisualDataBase.ViewModels
             {
                 if (req.Title == CurrentRequest.Title)
                 {
-                    req.Title = TitleCurrentRequest;
-                    req.TypeSelectTable = TypeCurrentSelectTable;
-                    req.SelectFields = new ObservableCollection<TableField>(FieldsSelectRequest);
+                    req.Title = CurrentRequest.Title;
+                    req.TypeSelectTable = CurrentRequest.TypeSelectTable;
+                    req.SelectFields = new List<string>(CurrentRequest.SelectFields);
 
                     if (CurrentSelectConditions != null)
-                        req.SelectConditions = new ObservableCollection<Condition>(CurrentSelectConditions);
+                        req.SelectConditions = new List<Condition>(CurrentSelectConditions);
 
                     return 0;
                 }
@@ -253,60 +216,25 @@ namespace VisualDataBase.ViewModels
 
         private bool VerifyTitleCurrentRequest()
         {
-            if (TitleCurrentRequest == string.Empty)
+            if (CurrentRequest.Title == string.Empty)
                 return false;
 
-            if (int.TryParse(TitleCurrentRequest, out var parsedNum))
+            if (int.TryParse(CurrentRequest.Title, out var parsedNum))
                 return false;
 
-            if (_titleCurrentRequest != CurrentRequest.Title)
-                foreach (var req in Requests)
-                    if (req.Title == TitleCurrentRequest)
-                        return false;
+            int countRepeatItems = 0;
+            foreach (var req in Requests)
+                if (req.Title == CurrentRequest.Title)
+                    countRepeatItems++;
+            if (countRepeatItems > 1)
+                return false;
 
             return true;
         }
 
-        private ObservableCollection<TableField> UpdateFields(TableTypes? tableType)
-        {
-            Type? classType = null;
-
-            switch (tableType)
-            {
-                case TableTypes.Seasons:
-                    classType = typeof(Season);
-                    break;
-                case TableTypes.Nations:
-                    classType = typeof(Nation);
-                    break;
-                case TableTypes.Players:
-                    classType = typeof(Player);
-                    break;
-                case TableTypes.PlayersSeasons:
-                    classType = typeof(PlayersSeason);
-                    break;
-            }
-
-            ObservableCollection<TableField> fields;
-            if (classType != null)
-            {
-                fields = new ObservableCollection<TableField>();
-
-                fields.Add(new TableField("All"));
-                foreach (var item in classType.GetProperties())
-                {
-                    fields.Add(new TableField(item.Name));
-                }
-
-                return fields;
-            }
-
-            return null;
-        }
-
         private void AddCondition(int command)
         {
-            if (TypeCurrentSelectTable == null)
+            if (CurrentRequest.TypeSelectTable == null)
                 return;
 
             switch(command)
@@ -315,13 +243,13 @@ namespace VisualDataBase.ViewModels
                     if (CurrentSelectConditions == null)
                         CurrentSelectConditions = new ObservableCollection<Condition>();
 
-                    CurrentSelectConditions.Add(new Condition(TypeCurrentSelectTable));
+                    CurrentSelectConditions.Add(new Condition(CurrentRequest.TypeSelectTable));
                     break;
                 case 1: // Join
                     if (JoinConditions == null)
                         JoinConditions = new ObservableCollection<Condition>();
 
-                    JoinConditions.Add(new Condition(TypeCurrentSelectTable));
+                    JoinConditions.Add(new Condition(CurrentRequest.TypeSelectTable));
                     break;
             }
         }

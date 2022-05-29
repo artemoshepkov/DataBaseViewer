@@ -31,15 +31,23 @@
         Cancel
       </Button>
 
-      <TextBox Text="{Binding TitleCurrentRequest}"/>
+      <ContentControl Content="{Binding CurrentRequest}">
+        <ContentControl.ContentTemplate>
+          <DataTemplate>
+            <TextBox Text="{Binding Title}"/>
+          </DataTemplate>
+        </ContentControl.ContentTemplate>
+      </ContentControl>
       
     </DockPanel>
 
     <Grid RowDefinitions="*, *, *" ColumnDefinitions="*, *, 2*" Grid.Row="1">
 
-      <ComboBox Items="{Binding AvailableSelectTables}" SelectedItem="{Binding TypeCurrentSelectTable}" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0"/>
+      <ComboBox Items="{Binding AvailableTables}" SelectedItem="{Binding CurrentRequest.TypeSelectTable}" SelectionChanged="ComboBoxSelectTable" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="0">
 
-      <ComboBox Items="{Binding FieldsSelectRequest}" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1">
+      </ComboBox>
+
+      <ComboBox Items="{Binding AvailableSelectFields}" HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1">
         <ComboBox.ItemTemplate>
           <DataTemplate>
             <CheckBox Content="{Binding Title}" IsChecked="{Binding IsSelected}" Click="FieldsCheckBoxOnClick" IsThreeState="False" />

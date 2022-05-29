@@ -8,25 +8,24 @@ namespace VisualDataBase.ViewModels
 {
     internal class DataBaseVisualViewModel : ViewModelBase
     {
-        public ObservableCollection<TableTabItemViewModel> _tableTabItems;
+        public ObservableCollection<TableTabItemBase> _tableTabItems;
+        private TableTabItemBase _currentTableTabItem;
 
-        private TableTabItemViewModel _currentTableTabItem;
-
-        public ObservableCollection<TableTabItemViewModel> TableTabItems
+        public ObservableCollection<TableTabItemBase> TableTabItems
         {
             get => _tableTabItems;
             set => this.RaiseAndSetIfChanged(ref _tableTabItems, value);
         }
-
-        public TableTabItemViewModel CurrentTableTabItem
+        public TableTabItemBase CurrentTableTabItem
         {
             get => _currentTableTabItem;
             set => this.RaiseAndSetIfChanged(ref _currentTableTabItem, value);
         }
 
+
         public DataBaseVisualViewModel()
         {
-            TableTabItems = new ObservableCollection<TableTabItemViewModel>(AddMainTabs());
+            TableTabItems = new ObservableCollection<TableTabItemBase>(AddMainTabs());
 
             CurrentTableTabItem = TableTabItems.First();
         }
@@ -43,9 +42,9 @@ namespace VisualDataBase.ViewModels
             };
         }
 
-        public void AddTabItemViewModel(string newTabtitle, List<object> list)
+        public void AddRequestTabItemViewModel(string newTabtitle, List<object> list)
         {
-            var newTab = new TableTabItemViewModel(newTabtitle, list);
+            var newTab = new RequestTableTabItemViewModel(newTabtitle, list);
 
             TableTabItems.Add(newTab);
 

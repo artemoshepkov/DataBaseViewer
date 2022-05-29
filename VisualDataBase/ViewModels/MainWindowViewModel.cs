@@ -44,7 +44,7 @@ namespace VisualDataBase.ViewModels
                 {
                     if (table != null)
                     {
-                        dataBaseVisualView.AddTabItemViewModel(vm.TitleCurrentRequest, table);
+                        dataBaseVisualView.AddRequestTabItemViewModel(vm.CurrentRequest.Title, table);
                     }
 
                     ContentView = dataBaseVisualView;

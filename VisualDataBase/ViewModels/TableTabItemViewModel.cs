@@ -1,9 +1,6 @@
 ﻿using ReactiveUI;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Dynamic;
-using System.Linq;
 using System.Reactive;
 using VisualDataBase.Models;
 
@@ -14,89 +11,34 @@ namespace VisualDataBase.ViewModels
         Seasons = 0,
         Nations,
         Players,
-        PlayersSeasons,
-        Request
+        PlayersSeasons
     }
 
-    public class TableTabItemViewModel : ViewModelBase
+    public class TableTabItemViewModel : TableTabItemBase
     {
-        private ObservableCollection<object> _content;
-
         private object _currenItemDataGrid;
 
-
         public TableTypes TableType { get; }
-
-        public bool IsRequestTable { get; }
-
-        public bool IsStaticTable { get; }
-
-        public string Title { get; }
-
         public dynamic DBContent { get; set; }
-
-        public ObservableCollection<object> Content
-        {
-            get
-            {
-                return _content;
-            }
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _content, value);
-            }
-        }
-
         public object CurrenItemDataGrid
         {
-            get
-            {
-                return _currenItemDataGrid;
-            }
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _currenItemDataGrid, value);
-            }
+            get => _currenItemDataGrid;
+            set => this.RaiseAndSetIfChanged(ref _currenItemDataGrid, value);
         }
 
         ReactiveCommand<Unit, Unit> AddRecordCommand { get; }
-
         ReactiveCommand<Unit, Unit> RemoveRecordCommand { get; }
-
         ReactiveCommand<Unit, Unit> SaveRecordsToDBCommand { get; }
 
-
-        public TableTabItemViewModel()
+        public TableTabItemViewModel(TableTypes table) : base(table.ToString(), false)
         {
+            TableType = table;
+
+            InitContent();
+
             AddRecordCommand = ReactiveCommand.Create(AddRecord);
             RemoveRecordCommand = ReactiveCommand.Create(RemoveRecord);
             SaveRecordsToDBCommand = ReactiveCommand.Create(SaveRecordsToDB);
-        }
-
-
-        public TableTabItemViewModel(TableTypes table) : base()
-        {
-            Title = table.ToString();
-
-            TableType = table;
-
-            IsRequestTable = false; 
-            IsStaticTable = true;
-
-            InitContent();
-        }
-
-        public TableTabItemViewModel(string title, List<object> list) : base()
-        {
-            Title = title;
-
-            IsRequestTable = true;
-            IsStaticTable = false;
-
-            TableType = TableTypes.Request;
-
-
-            Content = new ObservableCollection<object>(list);
         }
 
         private void InitContent()

@@ -14,6 +14,7 @@ namespace VisualDataBase.Models
         public TableField(string title)
         {
             Title = title;
+            IsSelected = false;
         }
     }
 }
