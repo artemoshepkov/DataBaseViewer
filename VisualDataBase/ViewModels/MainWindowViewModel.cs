@@ -1,7 +1,8 @@
 using ReactiveUI;
 using System.Reactive;
 using System.Collections.ObjectModel;
-
+using System.Reactive.Linq;
+using System;
 
 namespace VisualDataBase.ViewModels
 {
@@ -35,7 +36,22 @@ namespace VisualDataBase.ViewModels
 
         public void ChangeToManagerRequests()
         {
-            ContentView = managerRequestsView;
+            var vm = managerRequestsView;
+
+            Observable.Merge(vm.ExecuteRequestCommand)
+                .Take(1)
+                .Subscribe(table =>
+                {
+                    if (table != null)
+                    {
+                        dataBaseVisualView.AddTabItemViewModel(vm.TitleCurrentRequest, table);
+                    }
+
+                    ContentView = dataBaseVisualView;
+                }
+                );
+
+            ContentView = vm;
         }
     }
 }

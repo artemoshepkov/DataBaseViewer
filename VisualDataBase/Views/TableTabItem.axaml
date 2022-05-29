@@ -13,7 +13,7 @@
       <Button Content="-" IsVisible="{Binding IsStaticTable}" Command="{Binding RemoveRecordCommand}" />
     </DockPanel>
 
-      <DataGrid MaxHeight="475" Name="DataGridBases" Items="{Binding Content}" SelectedItem="{Binding CurrenItemDataGrid}" AutoGeneratingColumn="DeleteExcessColumns" AutoGenerateColumns="True" Grid.Row="1"/>       
+      <DataGrid MaxHeight="475" Name="Content" Items="{Binding Content}" SelectedItem="{Binding CurrenItemDataGrid}" AutoGeneratingColumn="DeleteExcessColumns" AutoGenerateColumns="True" Grid.Row="1"/>       
 
   </Grid>
   

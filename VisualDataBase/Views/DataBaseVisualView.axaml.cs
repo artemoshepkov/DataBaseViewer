@@ -24,7 +24,7 @@ namespace VisualDataBase.Views
 
             if (btn != null)
             {
-                DataBaseVisualViewModel context = this.DataContext as DataBaseVisualViewModel;
+                var context = this.DataContext as DataBaseVisualViewModel;
                 if (context != null)
                 {
                     context.TableTabItems.Remove(btn.DataContext as TableTabItemViewModel);

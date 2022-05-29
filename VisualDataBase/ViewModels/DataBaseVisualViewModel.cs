@@ -1,6 +1,8 @@
 ﻿using ReactiveUI;
 using System.Reactive;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace VisualDataBase.ViewModels
 {
@@ -26,7 +28,7 @@ namespace VisualDataBase.ViewModels
         {
             TableTabItems = new ObservableCollection<TableTabItemViewModel>(AddMainTabs());
 
-            CurrentTableTabItem = TableTabItems[0];
+            CurrentTableTabItem = TableTabItems.First();
         }
 
 
@@ -41,17 +43,13 @@ namespace VisualDataBase.ViewModels
             };
         }
 
-        private int indexPage = 1; // TEMPORARILY
-        private void AddTabItemViewModel(string newTabtitle)
+        public void AddTabItemViewModel(string newTabtitle, List<object> list)
         {
-            newTabtitle = "Page" + indexPage.ToString(); // TEMPORARILY
-            var newTab = new TableTabItemViewModel(newTabtitle);
+            var newTab = new TableTabItemViewModel(newTabtitle, list);
+
             TableTabItems.Add(newTab);
 
             CurrentTableTabItem = newTab;
-
-
-            indexPage++; // TEMPORARILY
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using ReactiveUI;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Dynamic;
+using System.Linq;
 using System.Reactive;
 using VisualDataBase.Models;
 
@@ -63,7 +66,15 @@ namespace VisualDataBase.ViewModels
         ReactiveCommand<Unit, Unit> SaveRecordsToDBCommand { get; }
 
 
-        public TableTabItemViewModel(TableTypes table)
+        public TableTabItemViewModel()
+        {
+            AddRecordCommand = ReactiveCommand.Create(AddRecord);
+            RemoveRecordCommand = ReactiveCommand.Create(RemoveRecord);
+            SaveRecordsToDBCommand = ReactiveCommand.Create(SaveRecordsToDB);
+        }
+
+
+        public TableTabItemViewModel(TableTypes table) : base()
         {
             Title = table.ToString();
 
@@ -73,13 +84,9 @@ namespace VisualDataBase.ViewModels
             IsStaticTable = true;
 
             InitContent();
-
-            AddRecordCommand = ReactiveCommand.Create(AddRecord);
-            RemoveRecordCommand = ReactiveCommand.Create(RemoveRecord);
-            SaveRecordsToDBCommand = ReactiveCommand.Create(SaveRecordsToDB);
         }
 
-        public TableTabItemViewModel(string title)
+        public TableTabItemViewModel(string title, List<object> list) : base()
         {
             Title = title;
 
@@ -87,6 +94,9 @@ namespace VisualDataBase.ViewModels
             IsStaticTable = false;
 
             TableType = TableTypes.Request;
+
+
+            Content = new ObservableCollection<object>(list);
         }
 
         private void InitContent()
@@ -165,6 +175,24 @@ namespace VisualDataBase.ViewModels
                             break;
                         case TableTypes.PlayersSeasons:
                             DBContent.Add(e.NewItems[0] as PlayersSeason);
+                            break;
+                    }
+                    break;
+
+                case NotifyCollectionChangedAction.Replace:
+                    switch (TableType)
+                    {
+                        case TableTypes.Seasons:
+                            DBContent.Replace(e.NewItems[0] as Season);
+                            break;
+                        case TableTypes.Nations:
+                            DBContent.Replace(e.NewItems[0] as Nation);
+                            break;
+                        case TableTypes.Players:
+                            DBContent.Replace(e.NewItems[0] as Player);
+                            break;
+                        case TableTypes.PlayersSeasons:
+                            DBContent.Replace(e.NewItems[0] as PlayersSeason);
                             break;
                     }
                     break;
