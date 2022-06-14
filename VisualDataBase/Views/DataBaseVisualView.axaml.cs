@@ -27,7 +27,7 @@ namespace VisualDataBase.Views
                 var context = this.DataContext as DataBaseVisualViewModel;
                 if (context != null)
                 {
-                    context.TableTabItems.Remove(btn.DataContext as TableTabItemViewModel);
+                    context.TableTabItems.Remove(btn.DataContext as TableTabItemBase);
                 }
             }
         }

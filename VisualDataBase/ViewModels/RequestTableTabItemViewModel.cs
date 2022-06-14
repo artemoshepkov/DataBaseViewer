@@ -7,15 +7,11 @@ using System.Threading.Tasks;
 
 namespace VisualDataBase.ViewModels
 {
-    internal class RequestTableTabItemViewModel : TableTabItemBase
+    public class RequestTableTabItemViewModel : TableTabItemBase
     {
-
-
         public RequestTableTabItemViewModel(string title, List<object> list) : base(title, true)
         {
-
-
-            //Content = new ObservableCollection<object>(list);
+            Content = new ObservableCollection<object>(list);
         }
     }
 }

@@ -22,41 +22,6 @@ namespace VisualDataBase.Views
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void ComboBoxSelectTable(object sender, SelectionChangedEventArgs e)
-        {
-            var context = this.DataContext as ManagerSQLRequestsViewModel;
-
-            Type? classType = null;
-
-            switch (e.AddedItems[0])
-            {
-                case TableTypes.Seasons:
-                    classType = typeof(Season);
-                    break;
-                case TableTypes.Nations:
-                    classType = typeof(Nation);
-                    break;
-                case TableTypes.Players:
-                    classType = typeof(Player);
-                    break;
-                case TableTypes.PlayersSeasons:
-                    classType = typeof(PlayersSeason);
-                    break;
-            }
-
-            try
-            {
-                context.AvailableSelectFields = new ObservableCollection<TableField>();
-
-                context.AvailableSelectFields.Add(new TableField("All"));
-                foreach (var item in classType.GetProperties())
-                {
-                    context.AvailableSelectFields.Add(new TableField(item.Name));
-                }
-            }
-            catch { }
-        }
-
         private void FieldsCheckBoxOnClick(object sender, RoutedEventArgs e)
         {
             CheckBox clickedBox = (CheckBox)sender;
@@ -67,35 +32,29 @@ namespace VisualDataBase.Views
             {
                 if (clickedBox.IsChecked.Value)
                 {
-                    context.CurrentRequest.SelectFields = new List<string>();
-                    foreach (var item in context.AvailableSelectFields)
+                    foreach (var item in context.CurrentRequest.SelectFields)
                     {
                         if (item.Title != "All")
                         {
                             item.IsSelected = true;
-                            context.CurrentRequest.SelectFields.Add(item.Title);
                         }
                     }
                 }
             }
-            else
-            {
-                string changedItem = (string)clickedBox.Content;
-                if (clickedBox.IsChecked.Value)
-                {
-                    if (!context.CurrentRequest.SelectFields.Contains(changedItem))
-                    {
-                        context.CurrentRequest.SelectFields.Add(changedItem);
-                    }
-                }
-                else
-                {
-                    if (context.CurrentRequest.SelectFields.Contains(changedItem))
-                    {
-                        context.CurrentRequest.SelectFields.Remove(changedItem);
-                    }
-                }
-            }
         }
+
+        private void ComboBoxSelectRequest(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                var context = this.DataContext as ManagerSQLRequestsViewModel;
+
+                var addedItem = (Request)e.AddedItems[0];
+
+                context.CurrentRequest = (Request)addedItem.Clone();
+            }
+            catch { }
+        }
+
     }
 }

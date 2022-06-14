@@ -16,19 +16,16 @@ namespace VisualDataBase.ViewModels
         private ObservableCollection<Request> _requests;
         private Request _currentRequest;
 
-        private ObservableCollection<TableField> _availableSelectFields;
-
-        public ObservableCollection<Condition>? _currentSelectConditions;
-        public Condition? _currentSelectCondition;
-
-        private TableTypes? _typeCurrentJoinTable;
-        private ObservableCollection<TableField>? _fieldsJoinRequest;
-        public ObservableCollection<Condition>? _joinConditions;
-
         public ObservableCollection<Request> Requests
         {
-            get => _requests;
-            set => this.RaiseAndSetIfChanged(ref _requests, value); 
+            get
+            {
+                return _requests;
+            }
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _requests, value);
+            }
         }
         public Request CurrentRequest
         {
@@ -41,56 +38,7 @@ namespace VisualDataBase.ViewModels
                 this.RaiseAndSetIfChanged(ref _currentRequest, value);
             }
         }
-
-        public static List<TableTypes> AvailableTables { get; } = new List<TableTypes> { TableTypes.Seasons, TableTypes.Nations, TableTypes.Players, TableTypes.PlayersSeasons };
-        public ObservableCollection<TableField> AvailableSelectFields 
-        { 
-            get => _availableSelectFields;
-            set => this.RaiseAndSetIfChanged(ref _availableSelectFields,  value);
-        }
-
-
-        public ObservableCollection<Condition>? CurrentSelectConditions
-        {
-            get { return _currentSelectConditions; }
-            set { this.RaiseAndSetIfChanged(ref _currentSelectConditions, value); }
-        }
-        public Condition? CurrentSelectCondition
-        {
-            get { return _currentSelectCondition; }
-            set { this.RaiseAndSetIfChanged(ref _currentSelectCondition, value); }
-        } // For remove
-
-
-        public ObservableCollection<Condition>? JoinConditions
-        {
-            get { return _joinConditions; }
-            set { this.RaiseAndSetIfChanged(ref _joinConditions, value); }
-        }
-        public TableTypes? TypeCurrentJoinTable
-        {
-            get
-            {
-                return _typeCurrentJoinTable;
-            }
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _typeCurrentJoinTable, value);
-                //FieldsJoinRequest = UpdateFields(_typeCurrentJoinTable);
-
-                //if (CurrentSelectConditions != null)
-                //    CurrentSelectConditions = new ObservableCollection<Condition>();
-
-            }
-        }
-        public ObservableCollection<TableField>? FieldsJoinRequest
-        {
-            get { return _fieldsJoinRequest; }
-            set { this.RaiseAndSetIfChanged(ref _fieldsJoinRequest, value); }
-        }
-        public string CurrentFirstJoinOnField { get; set; }
-        public string CurrentCommandOperatorJoinOnField { get; set; }
-        public string CurrentSecondJoinOnField { get; set; }
+        public Condition CurrentCondition { get; set; }
 
 
 
@@ -100,49 +48,50 @@ namespace VisualDataBase.ViewModels
 
         public ManagerSQLRequestsViewModel()
         {
-            Requests = new ObservableCollection<Request> { new Request { Title = "Req0" } };
+            Requests = new ObservableCollection<Request>();
+            AddRequest();
+
             CurrentRequest = (Request)Requests.First().Clone();
-            CurrentRequest.SelectFields = new List<string>();
 
             ExecuteRequestCommand = ReactiveCommand.Create<List<object>?>(ExecuteRequest);
-            AddConditionCommand = ReactiveCommand.Create<int>(AddCondition);
-            RemoveConditionCommand = ReactiveCommand.Create<int>(RemoveCondition);
+            //AddConditionCommand = ReactiveCommand.Create<int>(AddCondition);
+            //RemoveConditionCommand = ReactiveCommand.Create<int>(RemoveCondition);
         }
 
         private List<object>? ExecuteRequest()
         {
-            if (SaveRequest() != 0)
-                return null;
+            //if (SaveRequest() != 0)
+            //    return null;
 
             IQueryable<object>? result = null;
 
-            switch (CurrentRequest.TypeSelectTable)
-            {
-                case TableTypes.Seasons:
-                    result = from d in MyDataBaseContext.db.Seasons select d;
-                    break;
-                case TableTypes.Nations:
-                    result = from d in MyDataBaseContext.db.Nations select d;
-                    break;
-                case TableTypes.Players:
-                    result = from d in MyDataBaseContext.db.Players select d;
-                    break;
-                case TableTypes.PlayersSeasons:  
-                    result = from d in MyDataBaseContext.db.PlayersSeasons select d;
-                    break;
-            }
+            //switch (CurrentRequest.TypeSelectTable)
+            //{
+            //    case TableTypes.Seasons:
+            //        result = from d in MyDataBaseContext.db.Seasons select d;
+            //        break;
+            //    case TableTypes.Nations:
+            //        result = from d in MyDataBaseContext.db.Nations select d;
+            //        break;
+            //    case TableTypes.Players:
+            //        result = from d in MyDataBaseContext.db.Players select d;
+            //        break;
+            //    case TableTypes.PlayersSeasons:  
+            //        result = from d in MyDataBaseContext.db.PlayersSeasons select d;
+            //        break;
+            //}
 
-            /*
-             * Operator - And 
-             * Field - Id
-             * OperatorCommand - <
-             * Value - 1
-             */
+            //    /*
+            //     * Operator - And 
+            //     * Field - Id
+            //     * OperatorCommand - <
+            //     * Value - 1
+            //     */
 
-            if (CurrentSelectConditions is not null)
-            {
+            //if (CurrentSelectConditions is not null)
+            //{
 
-            }
+            //}
 
             return result.ToList();
         }
@@ -160,112 +109,117 @@ namespace VisualDataBase.ViewModels
                 }
             }
 
-            Requests.Add(new Request { Title = title });
+            Requests.Add(new Request (title));
         }
 
-        private void DeleteCurrentRequest()
-        {
-            Requests.Remove(CurrentRequest);
+        //private void DeleteCurrentRequest()
+        //{
+        //    Requests.Remove(CurrentRequest);
 
-            if (Requests.Count < 1)
-            {
-                AddRequest();
-            }
+        //    if (Requests.Count < 1)
+        //    {
+        //        AddRequest();
+        //    }
 
-            CurrentRequest = Requests.First();
-        }
+        //    CurrentRequest = Requests.First();
+        //}
 
-        private int SaveRequest()
-        {
-            if (!VerifyTitleCurrentRequest())
-                return -1;
+        //private int SaveRequest()
+        //{
+        //    if (!VerifyTitleCurrentRequest())
+        //        return -1;
 
-            if (CurrentRequest.TypeSelectTable is null)
-                return -1;
+        //    if (CurrentRequest.TypeSelectTable is null)
+        //        return -1;
 
-            if (CurrentRequest.SelectFields is null)
-                return -1;
+        //    if (CurrentRequest.SelectFields is null)
+        //        return -1;
 
-            if (CurrentSelectConditions is not null)
-            {
-                foreach (var cond in CurrentSelectConditions)
-                {
-                    if (cond.Operator == null || cond.Field == null || cond.OperatorCommand == null || cond.Value == null)
-                        return -1;
-                }
-            }
-           
+        //    if (CurrentRequest.SelectConditions is not null)
+        //    {
+        //        foreach (var cond in CurrentRequest.SelectConditions)
+        //        {
+        //            if (cond.Operator == null || cond.Field == null || cond.OperatorCommand == null || cond.Value == null)
+        //                return -1;
+        //        }
+        //    }
 
-            foreach (var req in Requests)
-            {
-                if (req.Title == CurrentRequest.Title)
-                {
-                    req.Title = CurrentRequest.Title;
-                    req.TypeSelectTable = CurrentRequest.TypeSelectTable;
-                    req.SelectFields = new List<string>(CurrentRequest.SelectFields);
 
-                    if (CurrentSelectConditions != null)
-                        req.SelectConditions = new List<Condition>(CurrentSelectConditions);
+        //    foreach (var req in Requests)
+        //    {
+        //        if (req.Title == CurrentRequest.Title)
+        //        {
+        //            req.Title = CurrentRequest.Title;
+        //            //req.TypeSelectTable = CurrentRequest.TypeSelectTable;
 
-                    return 0;
-                }
-            }
+        //            foreach (var item in AvailableSelectFields)
+        //            {
+        //                if (item.Title != "All" && item.IsSelected)
+        //                {
+        //                    req.SelectFields.Add(item.Title);
+        //                }
+        //            }
+        //            req.SelectConditions.CopyTo(CurrentRequest.SelectConditions.ToArray(), 0);
 
-            return -1;
-        }
+        //            return 0;
+        //        }
+        //    }
 
-        private bool VerifyTitleCurrentRequest()
-        {
-            if (CurrentRequest.Title == string.Empty)
-                return false;
+        //    return -1;
+        //}
 
-            if (int.TryParse(CurrentRequest.Title, out var parsedNum))
-                return false;
+        //private bool VerifyTitleCurrentRequest()
+        //{
+        //    if (CurrentRequest.Title == string.Empty)
+        //        return false;
 
-            int countRepeatItems = 0;
-            foreach (var req in Requests)
-                if (req.Title == CurrentRequest.Title)
-                    countRepeatItems++;
-            if (countRepeatItems > 1)
-                return false;
+        //    if (int.TryParse(CurrentRequest.Title, out var parsedNum))
+        //        return false;
 
-            return true;
-        }
+        //    int countRepeatItems = 0;
+        //    foreach (var req in Requests)
+        //        if (req.Title == CurrentRequest.Title)
+        //            countRepeatItems++;
+        //    if (countRepeatItems > 1)
+        //        return false;
 
-        private void AddCondition(int command)
-        {
-            if (CurrentRequest.TypeSelectTable == null)
-                return;
+        //    return true;
+        //}
 
-            switch(command)
-            {
-                case 0: // Select
-                    if (CurrentSelectConditions == null)
-                        CurrentSelectConditions = new ObservableCollection<Condition>();
+        //private void AddCondition(int command)
+        //{
+        //    if (CurrentRequest.TypeSelectTable == null)
+        //        return;
 
-                    CurrentSelectConditions.Add(new Condition(CurrentRequest.TypeSelectTable));
-                    break;
-                case 1: // Join
-                    if (JoinConditions == null)
-                        JoinConditions = new ObservableCollection<Condition>();
+        //    switch(command)
+        //    {
+        //        case 0: // Select
+        //            if (CurrentRequest.SelectConditions == null)
+        //                CurrentRequest.SelectConditions = new ObservableCollection<Condition>();
 
-                    JoinConditions.Add(new Condition(CurrentRequest.TypeSelectTable));
-                    break;
-            }
-        }
+        //            CurrentRequest.SelectConditions.Add(new Condition(CurrentRequest.TypeSelectTable));
+        //            break;
+        //        case 1: // Join
+        //            //if (JoinConditions == null)
+        //            //    JoinConditions = new ObservableCollection<Condition>();
 
-        private void RemoveCondition(int command)
-        {
-            if (CurrentSelectConditions == null)
-                return;
+        //            //JoinConditions.Add(new Condition(CurrentRequest.TypeSelectTable));
+        //            break;
+        //    }
+        //}
 
-            switch (command)
-            {
-                case 0: // Select
-                    CurrentSelectConditions.Remove(CurrentSelectCondition);
-                    break;
+        //private void RemoveCondition(int command)
+        //{
+        //    if (CurrentRequest.SelectConditions == null)
+        //        return;
 
-            }
-        }
+        //    switch (command)
+        //    {
+        //        case 0: // Select
+        //            CurrentRequest.SelectConditions.Remove(CurrentSelectCondition);
+        //            break;
+
+        //    }
+        //}
     }
 }
