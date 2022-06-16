@@ -6,14 +6,6 @@ using VisualDataBase.Models;
 
 namespace VisualDataBase.ViewModels
 {
-    public enum TableTypes
-    {
-        Seasons = 0,
-        Nations,
-        Players,
-        PlayersSeasons
-    }
-
     public class TableTabItemViewModel : TableTabItemBase
     {
         private object _currenItemDataGrid;

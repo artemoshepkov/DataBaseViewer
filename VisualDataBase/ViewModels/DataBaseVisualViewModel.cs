@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Collections.Generic;
+using VisualDataBase.Models;
 
 namespace VisualDataBase.ViewModels
 {

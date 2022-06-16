@@ -40,11 +40,12 @@ namespace VisualDataBase.ViewModels
         }
         public Condition CurrentCondition { get; set; }
 
-
-
         public ReactiveCommand<Unit, List<object>?> ExecuteRequestCommand { get; }
+        public ReactiveCommand<Unit, Unit> AddRequestCommand { get; }
+        public ReactiveCommand<Unit, Unit> DeleteCurrentRequestCommand { get; }
+        public ReactiveCommand<Unit, int> SaveRequestCommand { get; }
         public ReactiveCommand<int, Unit> AddConditionCommand { get; }
-        public ReactiveCommand<int, Unit> RemoveConditionCommand { get; }
+        public ReactiveCommand<Unit, Unit> RemoveConditionCommand { get; }
 
         public ManagerSQLRequestsViewModel()
         {
@@ -54,8 +55,11 @@ namespace VisualDataBase.ViewModels
             CurrentRequest = (Request)Requests.First().Clone();
 
             ExecuteRequestCommand = ReactiveCommand.Create<List<object>?>(ExecuteRequest);
-            //AddConditionCommand = ReactiveCommand.Create<int>(AddCondition);
-            //RemoveConditionCommand = ReactiveCommand.Create<int>(RemoveCondition);
+            AddRequestCommand = ReactiveCommand.Create(AddRequest);
+            DeleteCurrentRequestCommand = ReactiveCommand.Create(DeleteCurrentRequest);
+            SaveRequestCommand = ReactiveCommand.Create(SaveRequest);
+            AddConditionCommand = ReactiveCommand.Create<int>(AddCondition);
+            RemoveConditionCommand = ReactiveCommand.Create(RemoveCondition);
         }
 
         private List<object>? ExecuteRequest()
@@ -112,114 +116,83 @@ namespace VisualDataBase.ViewModels
             Requests.Add(new Request (title));
         }
 
-        //private void DeleteCurrentRequest()
-        //{
-        //    Requests.Remove(CurrentRequest);
+        private void DeleteCurrentRequest()
+        {
+            Requests.Remove(CurrentRequest);
 
-        //    if (Requests.Count < 1)
-        //    {
-        //        AddRequest();
-        //    }
+            if (Requests.Count < 1)
+            {
+                AddRequest();
+            }
 
-        //    CurrentRequest = Requests.First();
-        //}
+            CurrentRequest = (Request)Requests.First().Clone();
+        }
 
-        //private int SaveRequest()
-        //{
-        //    if (!VerifyTitleCurrentRequest())
-        //        return -1;
+        private int SaveRequest()
+        {
+            if (!VerifyTitleCurrentRequest())
+                return -1;
 
-        //    if (CurrentRequest.TypeSelectTable is null)
-        //        return -1;
+            if (CurrentRequest.SelectTableType is null)
+                return -1;
 
-        //    if (CurrentRequest.SelectFields is null)
-        //        return -1;
+            if (CurrentRequest.SelectFields is null)
+                return -1;
 
-        //    if (CurrentRequest.SelectConditions is not null)
-        //    {
-        //        foreach (var cond in CurrentRequest.SelectConditions)
-        //        {
-        //            if (cond.Operator == null || cond.Field == null || cond.OperatorCommand == null || cond.Value == null)
-        //                return -1;
-        //        }
-        //    }
+            if (CurrentRequest.Conditions.Count > 0)
+            {
+                foreach (var cond in CurrentRequest.Conditions)
+                {
+                    if (cond.Operator == null || cond.Field == null || cond.ConditionOperator == null || cond.Value == null)
+                        return -1;
+                }
+            }
 
+            for (int i = 0; i < Requests.Count; i++)
+            {
+                if (Requests[i].Title == CurrentRequest.Title)
+                {
+                    Requests[i] = (Request)CurrentRequest.Clone();
 
-        //    foreach (var req in Requests)
-        //    {
-        //        if (req.Title == CurrentRequest.Title)
-        //        {
-        //            req.Title = CurrentRequest.Title;
-        //            //req.TypeSelectTable = CurrentRequest.TypeSelectTable;
+                    return 0;
+                }
+            }
 
-        //            foreach (var item in AvailableSelectFields)
-        //            {
-        //                if (item.Title != "All" && item.IsSelected)
-        //                {
-        //                    req.SelectFields.Add(item.Title);
-        //                }
-        //            }
-        //            req.SelectConditions.CopyTo(CurrentRequest.SelectConditions.ToArray(), 0);
+            return -1;
+        }
 
-        //            return 0;
-        //        }
-        //    }
+        private bool VerifyTitleCurrentRequest()
+        {
+            if (CurrentRequest.Title == string.Empty)
+                return false;
 
-        //    return -1;
-        //}
+            if (int.TryParse(CurrentRequest.Title, out var parsedNum))
+                return false;
 
-        //private bool VerifyTitleCurrentRequest()
-        //{
-        //    if (CurrentRequest.Title == string.Empty)
-        //        return false;
+            int countRepeatItems = 0;
+            foreach (var req in Requests)
+                if (req.Title == CurrentRequest.Title)
+                    countRepeatItems++;
+            if (countRepeatItems > 1)
+                return false;
 
-        //    if (int.TryParse(CurrentRequest.Title, out var parsedNum))
-        //        return false;
+            return true;
+        }
 
-        //    int countRepeatItems = 0;
-        //    foreach (var req in Requests)
-        //        if (req.Title == CurrentRequest.Title)
-        //            countRepeatItems++;
-        //    if (countRepeatItems > 1)
-        //        return false;
+        private void AddCondition(int command)
+        {            
+            if (CurrentRequest.SelectTableType == null)
+                return;
 
-        //    return true;
-        //}
+            CurrentRequest.Conditions.Add(new Condition((ConditionTypes)command, CurrentRequest.SelectTableType));
+        }
 
-        //private void AddCondition(int command)
-        //{
-        //    if (CurrentRequest.TypeSelectTable == null)
-        //        return;
+        private void RemoveCondition()
+        {
+            if (CurrentRequest.Conditions.Count < 0)
+                return;
 
-        //    switch(command)
-        //    {
-        //        case 0: // Select
-        //            if (CurrentRequest.SelectConditions == null)
-        //                CurrentRequest.SelectConditions = new ObservableCollection<Condition>();
-
-        //            CurrentRequest.SelectConditions.Add(new Condition(CurrentRequest.TypeSelectTable));
-        //            break;
-        //        case 1: // Join
-        //            //if (JoinConditions == null)
-        //            //    JoinConditions = new ObservableCollection<Condition>();
-
-        //            //JoinConditions.Add(new Condition(CurrentRequest.TypeSelectTable));
-        //            break;
-        //    }
-        //}
-
-        //private void RemoveCondition(int command)
-        //{
-        //    if (CurrentRequest.SelectConditions == null)
-        //        return;
-
-        //    switch (command)
-        //    {
-        //        case 0: // Select
-        //            CurrentRequest.SelectConditions.Remove(CurrentSelectCondition);
-        //            break;
-
-        //    }
-        //}
+            CurrentRequest.Conditions.Remove(CurrentCondition);
+        }
     }
 }

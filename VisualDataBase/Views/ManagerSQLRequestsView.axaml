@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+			 xmlns:userClasses="clr-namespace:VisualDataBase.Models;assembly=mscorlib"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
              x:Class="VisualDataBase.Views.ManagerSQLRequestsView"
              Width="900" Height="600">
@@ -19,11 +20,11 @@
         <Image Source="/Assets/icon_save.png" Width="20" Stretch="Fill"></Image>
       </Button>
 
-      <Button Command="{Binding AddRequest}">
+      <Button Command="{Binding AddRequestCommand}">
         +
       </Button>
       
-      <Button Command="{Binding DeleteCurrentRequest}">
+      <Button Command="{Binding DeleteCurrentRequestCommand}">
         <Image Source="/Assets/icon_deleteBucket.png" Width="20" Stretch="Fill"></Image>
       </Button>
 
@@ -54,7 +55,7 @@
       </ComboBox>
 
       <Grid RowDefinitions="*, auto" Grid.Row="0" Grid.Column="2">
-        <DataGrid Name="SelectConditions" Items="{Binding CurrentRequest.SelectConditions}" SelectedItem="CurrentSelectCondition" CanUserReorderColumns="False" Grid.Row="0">
+        <DataGrid Items="{Binding CurrentRequest.Conditions}" SelectedItem="{Binding CurrentCondition}" CanUserReorderColumns="False" Grid.Row="0">
           <DataGrid.Columns>
 
             <DataGridTemplateColumn Header="Operator" Width="auto">
@@ -77,7 +78,7 @@
             <DataGridTemplateColumn Header="Condition" Width="auto">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                  <ComboBox Items="{Binding OperatorCommands}" SelectedItem="{Binding OperatorCommand}" HorizontalAlignment="Stretch" />
+                  <ComboBox Items="{Binding ConditionOperators}" SelectedItem="{Binding ConditionOperator}" HorizontalAlignment="Stretch" />
                 </DataTemplate>
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
@@ -96,14 +97,11 @@
         <Grid ColumnDefinitions="*, *" Grid.Row="1">
           <Button Command="{Binding AddConditionCommand}" HorizontalAlignment="Stretch" Grid.Column="0">
             <Button.CommandParameter>
-              <sys:Int32>0</sys:Int32>
+				<sys:Int32>0</sys:Int32>
             </Button.CommandParameter>
             Add
           </Button>
-          <Button Command="{Binding RemoveCondition}" HorizontalAlignment="Stretch" Grid.Column="1">
-            <Button.CommandParameter>
-              <sys:Int32>0</sys:Int32>
-            </Button.CommandParameter>
+          <Button Command="{Binding RemoveConditionCommand}" HorizontalAlignment="Stretch" Grid.Column="1">
             Delete
           </Button>
         </Grid>

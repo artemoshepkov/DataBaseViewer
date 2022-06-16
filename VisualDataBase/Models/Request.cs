@@ -6,18 +6,19 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using VisualDataBase.Models;
+using VisualDataBase.ViewModels;
 
-namespace VisualDataBase.ViewModels
+namespace VisualDataBase.Models
 {
     public class Request : ICloneable, INotifyPropertyChanged
     {
-        private TableTypes _selectTableType;
+        private TableTypes? _selectTableType;
         private ObservableCollection<TableField> _selectFields;
+        private ObservableCollection<Condition> _conditions;
 
         public string Title { get; set; }
         
-        public TableTypes SelectTableType
+        public TableTypes? SelectTableType
         {
             get
             {
@@ -43,6 +44,19 @@ namespace VisualDataBase.ViewModels
                 NotifyPropertyChanged();
             }
         }
+        public ObservableCollection<Condition> Conditions
+        {
+            get
+            {
+                return _conditions;
+            }
+            set
+            {
+                _conditions = value;
+
+                NotifyPropertyChanged();
+            }
+        }
 
         public static List<TableTypes> AvailableTableTypes { get; } = new List<TableTypes> {
             TableTypes.Players,
@@ -58,10 +72,13 @@ namespace VisualDataBase.ViewModels
             Title = title;
 
             SelectFields = new ObservableCollection<TableField>();
+
+            Conditions = new ObservableCollection<Condition>();
         }
 
         private void ChangedSelectFields()
         {
+            
             Type? classType = null;
 
             switch (SelectTableType)
@@ -79,6 +96,10 @@ namespace VisualDataBase.ViewModels
                     classType = typeof(PlayersSeason);
                     break;
             }
+
+            if (classType == null)
+                return;
+
             SelectFields = new ObservableCollection<TableField>();
 
             SelectFields.Add(new TableField("All"));
@@ -96,7 +117,8 @@ namespace VisualDataBase.ViewModels
             {
                 Title = this.Title,
                 SelectTableType = this.SelectTableType,
-                SelectFields = this.SelectFields
+                SelectFields = this.SelectFields,
+                Conditions = this.Conditions
             };
         }
 
